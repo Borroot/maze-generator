@@ -17,7 +17,11 @@ struct Cell {
 const int DIR_SIZE = 4;
 const Cell directions[DIR_SIZE] = {{0, -2}, {2, 0}, {0, 2}, {-2, 0}};
 
-ostream &operator<< (ostream &out, Cell cell){
+bool operator == (Cell c1, Cell c2){
+	return c1.x == c2.x && c1.y == c2.y;
+}
+
+ostream &operator << (ostream &out, Cell cell){
 	cout << "[" << cell.x << "," << cell.y << "]";
 	return out;
 }
@@ -52,13 +56,13 @@ void print(vector<vector<int>> &maze){
 	}
 }
 
-void init(vector<vector<int>> &maze, vector<Cell> &unvisited, const int W){
+void init(vector<vector<int>> &maze, vector<Cell> &unvisited){
 	for(int y = 0; y < maze.size(); y++){
-		for(int x = 0; x < W; x++){
+		for(int x = 0; x < maze[y].size(); x++){
 			if(y % 2 == 0 || x % 2 == 0){
-				maze[y].push_back(O);
+				maze[y][x] = O;
 			}else{
-				maze[y].push_back(U);
+				maze[y][x] = U;
 				Cell cell = {x, y};
 				unvisited.push_back(cell);
 			}
@@ -71,7 +75,7 @@ int cell_value(vector<vector<int>> &maze, Cell cell){
 }
 
 bool valid_cell(vector<vector<int>> &maze, Cell cell){
-	return cell.x >= 0 && cell.x < maze[0].size() && cell.y >= 0 && cell.y < maze.size();
+	return cell.x >= 0 && cell.y >= 0 && cell.x < maze[cell.y].size() && cell.y < maze.size();
 }
 
 vector<Cell> neighbors(vector<vector<int>> &maze, Cell cell){
@@ -86,7 +90,6 @@ vector<Cell> neighbors(vector<vector<int>> &maze, Cell cell){
 			neighbors.push_back(neighbor);
 		}
 	}
-
 	return neighbors;
 }
 
@@ -122,11 +125,19 @@ void remove_wall(vector<vector<int>> &maze, Cell c1, Cell c2){
 	maze[wall.y][wall.x] = V;
 }
 
+void remove(vector<Cell> &v, Cell c){
+	for(int i = 0; i < v.size(); i++){
+		if(v[i] == c){
+			v.erase(v.begin() + i);
+		}
+	}
+}
+
 void generate(vector<vector<int>> &maze, vector<Cell> &unvisited, vector<Cell> &visited){
 	Cell current = unvisited.back();
 	unvisited.pop_back();
 	visited.push_back(current);
-	maze[current.y][current.y] = V;
+	maze[current.y][current.x] = V;
 	
 	while(unvisited.size() != 0){
 		if(unvisited_neighbors(maze, current)){
@@ -134,7 +145,7 @@ void generate(vector<vector<int>> &maze, vector<Cell> &unvisited, vector<Cell> &
 			remove_wall(maze, current, neighbor);
 
 			current = neighbor;
-			unvisited.pop_back();
+			remove(unvisited, current);
 			visited.push_back(current);	
 			maze[current.y][current.x] = V;
 		}else if(visited.size() != 0){
@@ -161,11 +172,11 @@ int main(int argc, char* argv[]){
 	const int H = height*2+1; // array height
 	const int W = width*2+1;  // array width
 
- 	vector<vector<int>> maze(H);
+ 	vector<vector<int>> maze(H, vector<int>(W));
 	vector<Cell> unvisited;
 	vector<Cell> visited;
 
-	init(maze, unvisited, W);
+	init(maze, unvisited);
 	generate(maze, unvisited, visited);
 	print(maze);
 
