@@ -38,7 +38,7 @@ void print(vector<Cell> v){
 	cout << "}" << endl;
 }
 
-void print(int maze[H][W]){
+void print(vector<vector<int>> &maze){
 	for(int y = 0; y < H; y++){
 		for(int x = 0; x < W; x++){
 			if(maze[y][x] == O) {
@@ -57,13 +57,13 @@ void print(int maze[H][W]){
 	}
 }
 
-void init(int maze[H][W], vector<Cell> &unvisited){
+void init(vector<vector<int>> &maze, vector<Cell> &unvisited){
 	for(int y = 0; y < H; y++){
 		for(int x = 0; x < W; x++){
 			if(y % 2 == 0 || x % 2 == 0){
-				maze[y][x] = O;
+				maze[y].push_back(O);
 			}else{
-				maze[y][x] = U;
+				maze[y].push_back(U);
 				Cell cell = {x, y};
 				unvisited.push_back(cell);
 			}
@@ -71,7 +71,7 @@ void init(int maze[H][W], vector<Cell> &unvisited){
 	}
 }
 
-int cell_value(int maze[H][W], Cell cell){
+int cell_value(vector<vector<int>> &maze, Cell cell){
 	return maze[cell.y][cell.x];
 }
 
@@ -79,7 +79,7 @@ bool valid_cell(Cell cell){
 	return cell.x >= 0 && cell.x < W && cell.y >= 0 && cell.y < H;
 }
 
-vector<Cell> neighbors(int maze[H][W], Cell cell){
+vector<Cell> neighbors(vector<vector<int>> &maze, Cell cell){
 	vector<Cell> neighbors;
 
 	for(int i = 0; i < DIR_SIZE; i++){
@@ -95,7 +95,7 @@ vector<Cell> neighbors(int maze[H][W], Cell cell){
 	return neighbors;
 }
 
-bool unvisited_neighbors(int maze[H][W], Cell cell){
+bool unvisited_neighbors(vector<vector<int>> &maze, Cell cell){
 	vector<Cell> _neighbors = neighbors(maze, cell);
 
 	for(int i = 0; i < _neighbors.size(); i++){
@@ -106,7 +106,7 @@ bool unvisited_neighbors(int maze[H][W], Cell cell){
 	return false;
 }
 
-Cell random_unvisited_neighbor(int maze[H][W], Cell cell){
+Cell random_unvisited_neighbor(vector<vector<int>> &maze, Cell cell){
 	assert(unvisited_neighbors(maze, cell));
 
 	vector<Cell> _neighbors = neighbors(maze, cell);
@@ -122,12 +122,12 @@ Cell random_unvisited_neighbor(int maze[H][W], Cell cell){
 	return _unvisited_neighbors[index];
 }
 
-void remove_wall(int maze[H][W], Cell c1, Cell c2){
+void remove_wall(vector<vector<int>> &maze, Cell c1, Cell c2){
 	Cell wall = {(c1.x+c2.x)/2, (c1.y+c2.y)/2};
 	maze[wall.y][wall.x] = V;
 }
 
-void generate(int maze[H][W], vector<Cell> &unvisited, vector<Cell> &visited){
+void generate(vector<vector<int>> &maze, vector<Cell> &unvisited, vector<Cell> &visited){
 	Cell current = unvisited.back();
 	unvisited.pop_back();
 	visited.push_back(current);
@@ -152,7 +152,7 @@ void generate(int maze[H][W], vector<Cell> &unvisited, vector<Cell> &visited){
 int main(){
 	srand(time(0));
 
- 	int maze[H][W];
+ 	vector<vector<int>> maze(H);
 	vector<Cell> unvisited;
 	vector<Cell> visited;
 
