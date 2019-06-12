@@ -8,11 +8,6 @@ using namespace std;
 #define V 1 // visited
 #define U 0 // unvisited
 
-const int height = 25;
-const int width = height;
-
-const int H = height*2+1; // height
-const int W = width*2+1;  // width
 
 struct Cell {
 	int x;
@@ -39,8 +34,8 @@ void print(vector<Cell> v){
 }
 
 void print(vector<vector<int>> &maze){
-	for(int y = 0; y < H; y++){
-		for(int x = 0; x < W; x++){
+	for(int y = 0; y < maze.size(); y++){
+		for(int x = 0; x < maze[y].size(); x++){
 			if(maze[y][x] == O) {
 				if(y % 2 == 0)
 					cout << '-';
@@ -57,8 +52,8 @@ void print(vector<vector<int>> &maze){
 	}
 }
 
-void init(vector<vector<int>> &maze, vector<Cell> &unvisited){
-	for(int y = 0; y < H; y++){
+void init(vector<vector<int>> &maze, vector<Cell> &unvisited, const int W){
+	for(int y = 0; y < maze.size(); y++){
 		for(int x = 0; x < W; x++){
 			if(y % 2 == 0 || x % 2 == 0){
 				maze[y].push_back(O);
@@ -75,8 +70,8 @@ int cell_value(vector<vector<int>> &maze, Cell cell){
 	return maze[cell.y][cell.x];
 }
 
-bool valid_cell(Cell cell){
-	return cell.x >= 0 && cell.x < W && cell.y >= 0 && cell.y < H;
+bool valid_cell(vector<vector<int>> &maze, Cell cell){
+	return cell.x >= 0 && cell.x < maze[0].size() && cell.y >= 0 && cell.y < maze.size();
 }
 
 vector<Cell> neighbors(vector<vector<int>> &maze, Cell cell){
@@ -87,7 +82,7 @@ vector<Cell> neighbors(vector<vector<int>> &maze, Cell cell){
 		int new_y = cell.y + directions[i].y;
 		Cell neighbor = {new_x, new_y};
 
-		if(valid_cell(neighbor)){
+		if(valid_cell(maze, neighbor)){
 			neighbors.push_back(neighbor);
 		}
 	}
@@ -149,14 +144,28 @@ void generate(vector<vector<int>> &maze, vector<Cell> &unvisited, vector<Cell> &
 	}
 }
 
-int main(){
+int main(int argc, char* argv[]){
 	srand(time(0));
+
+	int height = 25;
+	int width = height;
+
+	if(argc > 1){
+		height = atoi(argv[1]);
+		width = height;
+	}
+	if(argc > 2){
+		width = atoi(argv[2]);
+	}
+	
+	const int H = height*2+1; // array height
+	const int W = width*2+1;  // array width
 
  	vector<vector<int>> maze(H);
 	vector<Cell> unvisited;
 	vector<Cell> visited;
 
-	init(maze, unvisited);
+	init(maze, unvisited, W);
 	generate(maze, unvisited, visited);
 	print(maze);
 
