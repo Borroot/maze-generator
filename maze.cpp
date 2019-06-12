@@ -7,18 +7,25 @@ using namespace std;
 #define V 1 // visited
 #define U 0 // unvisited
 
-int H = 10; // height
-int W = H;  // width
+int height = 5;
+int width = height;
+int H = height*2+1; // height
+int W = width*2+1;  // width
 
 void print(vector<vector<int>> maze){
 	for(int y = 0; y < H; y++){
 		for(int x = 0; x < W; x++){
-			if(maze[y][x] == O)
-				cout << 'O';
-			else if(maze[y][x] == V)
-				cout << 'V';
-			else 
-				cout << 'U';
+			if(maze[y][x] == O) {
+				if(y % 2 == 0)
+					cout << '-';
+				else
+					cout << '|';
+			} else if(maze[y][x] == V) {
+				cout << '.';
+			} else { // unvisited
+				cout << ' ';
+			}
+			cout << " ";
 		}
 		cout << endl;
 	}
@@ -27,7 +34,8 @@ void print(vector<vector<int>> maze){
 void init(vector<vector<int>> &maze){
 	for(int y = 0; y < H; y++){
 		for(int x = 0; x < W; x++){
-			maze[y][x] = V;
+			if(y % 2 == 0 || x % 2 == 0)
+				maze[y][x] = O;
 		}
 	}
 }
