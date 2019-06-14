@@ -4,6 +4,7 @@
 
 using namespace std;
 
+#define P 3 // path
 #define O 2 // obstacle
 #define V 1 // visited
 #define U 0 // unvisited
@@ -14,11 +15,14 @@ struct Cell {
 	int y;
 };
 
-const int DIR_SIZE = 4;
-const Cell directions[DIR_SIZE] = {{0, -2}, {2, 0}, {0, 2}, {-2, 0}};
+const vector<Cell> DIRS = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
 
 bool operator == (Cell c1, Cell c2){
 	return c1.x == c2.x && c1.y == c2.y;
+}
+
+bool operator != (Cell c1, Cell c2){
+	return !(c1 == c2);
 }
 
 ostream &operator << (ostream &out, Cell cell){
@@ -47,8 +51,10 @@ void print(vector<vector<int>> &maze){
 					cout << '|';
 			} else if(maze[y][x] == V) {
 				cout << ' ';
-			} else { // unvisited
+			} else if(maze[y][x] == U) {
 				cout << '.';
+			}else{
+				cout << 'X';
 			}
 			cout << " ";
 		}
@@ -81,9 +87,9 @@ bool valid_cell(vector<vector<int>> &maze, Cell cell){
 vector<Cell> neighbors(vector<vector<int>> &maze, Cell cell){
 	vector<Cell> neighbors;
 
-	for(int i = 0; i < DIR_SIZE; i++){
-		int new_x = cell.x + directions[i].x;
-		int new_y = cell.y + directions[i].y;
+	for(int i = 0; i < DIRS.size(); i++){
+		int new_x = cell.x + DIRS[i].x*2;
+		int new_y = cell.y + DIRS[i].y*2;
 		Cell neighbor = {new_x, new_y};
 
 		if(valid_cell(maze, neighbor)){
@@ -158,7 +164,7 @@ void generate(vector<vector<int>> &maze, vector<Cell> &unvisited, vector<Cell> &
 int main(int argc, char* argv[]){
 	srand(time(0));
 
-	int height = 25;
+	int height = 15;
 	int width = height;
 
 	if(argc > 1){
@@ -178,6 +184,12 @@ int main(int argc, char* argv[]){
 
 	init(maze, unvisited);
 	generate(maze, unvisited, visited);
+
+	Cell start = {1, H-1};
+	Cell finish = {W-1, 1};
+	maze[start.y][start.x] = P;
+	maze[finish.y][finish.x] = P;
+
 	print(maze);
 
 	return 0;
