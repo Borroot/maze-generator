@@ -1,5 +1,9 @@
-make: maze.cpp
-	g++ -o maze maze.cpp
+all: maze
 
-clean: 
-	rm maze
+maze: maze.cpp
+	$(CXX) -o maze maze.cpp
+
+clean:
+	rm -f maze
+
+.PHONY: all clean
